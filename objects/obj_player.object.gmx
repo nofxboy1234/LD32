@@ -30,11 +30,13 @@ grav = 1;
 spd = 10;
 dash_spd = 200;
 
+dir_facing = 1; // 1 = right, -1 = left
+
 // Stats
 endurance = 200;
 endurance_cost = 100;
 
-stamina_delay = room_speed * 5; // take 5 seconds to fill a completely empty stamina bar
+stamina_delay = room_speed * 3; // take 5 seconds to fill a completely empty stamina bar
 stamina_fraction = 1;
 
 // HUD bars
@@ -52,29 +54,6 @@ airjump = 1;
 xaxis = 0;
 yaxis = 0;
 magnitude = 0;
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="2" enumb="0">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>// no comment
 </string>
           </argument>
         </arguments>
@@ -170,6 +149,7 @@ if (go_right) {
         &amp;&amp; !go_left) {
             vspd = -jspd;
         }
+    dir_facing = 1;
 }
 
 // Moving left
@@ -187,6 +167,7 @@ if (go_left) {
         &amp;&amp; !go_right) {
             vspd = -jspd;
         }
+    dir_facing = -1;
 }
 
 // Check for not moving
@@ -199,9 +180,37 @@ if ((!go_right &amp;&amp; !go_left) || (go_right &amp;&amp; go_left)) {
             hspd -= fric;
         }
     }
+
+    /*    
+    if (endurance &gt;= endurance_cost) {
+        // if the player isn't running, and is slowing down
+        // and they're facing the right, and they press dash
+        if ((dir_facing = 1) &amp;&amp; dash) {
+            // dash left
+            hspd += -dash_spd;
+            
+            endurance -= endurance_cost;
+            if endurance &lt; 0 {
+                endurance = 0;
+            }
+            
+        }
+        // if the player isn't running, and is slowing down
+        // and they're facing the left, and they press dash
+        if ((dir_facing = -1) &amp;&amp; dash) {
+            // dash right
+            hspd += dash_spd;
+            
+            endurance -= endurance_cost;
+            if endurance &lt; 0 {
+                endurance = 0;
+            }
+            
+        }
+    }*/
 }
 
-// Dash
+// Dash while moving and if at least the minimum endurance cost is available
 if (endurance &gt;= endurance_cost) {
     if (dash &amp;&amp; go_right) {
         hspd += dash_spd;

@@ -41,9 +41,8 @@ if (instance_exists(obj_player)) {
     draw_set_alpha(1.0);
     
     // Debugging info
-    draw_text(10, 10, "stamina_fraction: " + string(obj_player.stamina_fraction));
-    draw_text(10, 30, "endurance: " + string(obj_player.endurance));
-    draw_text(10, 50, "alarm[0]: " + string(obj_player.alarm[0]));
+    draw_text(10, 70, "stamina_fraction: " + string(obj_player.stamina_fraction));
+    draw_text(10, 100, "endurance: " + string(obj_player.endurance));
 }
 </string>
           </argument>
