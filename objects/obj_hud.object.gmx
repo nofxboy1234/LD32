@@ -8,6 +8,43 @@
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
   <events>
+    <event eventtype="3" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>// Manage the player's stamina bar
+//if (obj_player.endurance == 0) {
+    // Reset the player's stamina_delay so that the endurance meter starts refilling
+    
+    //alarm[0] = obj_player.stamina_delay;
+//}
+
+// Set player's endurance so that it knows if it can dash.
+// Set the player's stamina_fraction so that the draw_gui event can use it.
+//if (alarm[0] &gt;= 0) {
+    // Set the player's endurance meter
+    //obj_player.stamina_fraction = (obj_player.stamina_delay - alarm[0])/obj_player.stamina_delay;
+    //obj_player.endurance = obj_player.stamina_fraction * obj_player.stamina;
+//}
+
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="8" enumb="64">
       <action>
         <libid>1</libid>
@@ -25,19 +62,25 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if (instance_exists(obj_player)) {
+            <string>// Draw the player's stamina bar
+if (instance_exists(obj_player)) {
     BarIndent = 50;
-    BarWidth = view_wport[0] - (BarIndent * 2);
-    BarHeight = 20;
-    BarTop = (view_hport[0] - BarIndent) - BarHeight;
+    BarWidth = view_wport[0]/5 - (BarIndent * 2);
+    BarHeight = 5;
+    BarTop = BarIndent;
     
-    stamina_fraction = obj_player.endurance / obj_player.stamina;
+    // stamina_fraction = obj_player.endurance / obj_player.stamina;
     
     draw_set_colour(c_green);
     draw_set_alpha(0.7);
     draw_rectangle(BarIndent, BarTop, BarIndent + BarWidth, BarTop + BarHeight, true);
-    draw_rectangle(BarIndent, BarTop, BarIndent + (BarWidth * stamina_fraction), BarTop + BarHeight, false);
+    draw_rectangle(BarIndent, BarTop, BarIndent + (BarWidth * obj_player.stamina_fraction), BarTop + BarHeight, false);
     draw_set_alpha(1.0);
+    
+    // Debugging info
+    draw_text(10, 10, "stamina_fraction: " + string(obj_player.stamina_fraction));
+    draw_text(10, 30, "endurance: " + string(obj_player.endurance));
+    draw_text(10, 50, "alarm[0]: " + string(obj_player.alarm[0]));
 }
 </string>
           </argument>

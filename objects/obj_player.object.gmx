@@ -34,6 +34,9 @@ dash_spd = 200;
 endurance = 200;
 endurance_hit = 100;
 
+stamina_delay = room_speed * 5;
+stamina_fraction = 1;
+
 // HUD bars
 stamina = 200;
 
@@ -48,6 +51,29 @@ airjump = 1;
 xaxis = 0;
 yaxis = 0;
 magnitude = 0;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="2" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>// no comment
 </string>
           </argument>
         </arguments>
@@ -81,8 +107,8 @@ var device = 0;
 // Keyboard controls
 var rkey = keyboard_check(vk_right);
 var lkey = keyboard_check(vk_left);
-var jkey = keyboard_check_pressed(ord('Z'));
-var dash_key = keyboard_check_pressed(ord('X'));
+var jkey = keyboard_check_pressed(ord('X'));
+var dash_key = keyboard_check_pressed(ord('Z'));
 
 // Gamepad controls
 var r_pad = gamepad_button_check(0, gp_padr);
@@ -180,20 +206,28 @@ if (endurance &gt; 0) {
         hspd += dash_spd;
         
         endurance -= endurance_hit;
-        if stamina &lt; 0 {
-            stamina = 0;
+        if endurance &lt; 0 {
+            endurance = 0;
         }
+        alarm[0] = stamina_delay;
     }
     else {
         if (dash &amp;&amp; go_left) {
             hspd += -dash_spd;
             
             endurance -= endurance_hit;
-            if stamina &lt; 0 {
-                stamina = 0;
+            if endurance &lt; 0 {
+                endurance = 0;
             }
+            alarm[0] = stamina_delay;
         }
     }
+}
+
+// Set the endurance meter
+if (alarm[0] != -1) {
+    stamina_fraction = (stamina_delay - alarm[0])/stamina_delay;
+    endurance = stamina_fraction * stamina;
 }
 
 // Horizontal collissions
@@ -217,6 +251,8 @@ if (place_meeting(x, y + vspd, obj_solid)) {
 
 // Move vertically
 y += vspd;
+
+
 
 
 
