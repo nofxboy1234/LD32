@@ -52,8 +52,13 @@ if (instance_exists(obj_player)) {
     draw_text(10, 110, "cur_stamina: " + string(obj_player.cur_stamina));
     draw_text(10, 140, "dashing: " + string(obj_player.dashing));
     draw_text(10, 170, "cur_hp: " + string(obj_player.cur_hp));
-    
 }
+
+if (instance_exists(obj_boss)) {
+    draw_text(10, 200, "boss cur_hp: " + string(obj_boss.cur_hp));
+    draw_text(10, 230, "boss image_index: " + string(obj_boss.image_index));
+}
+
 </string>
           </argument>
         </arguments>

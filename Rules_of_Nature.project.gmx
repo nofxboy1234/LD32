@@ -24,6 +24,7 @@
     <object>objects\obj_player</object>
     <object>objects\obj_player2</object>
     <object>objects\obj_enemy</object>
+    <object>objects\obj_boss</object>
     <object>objects\obj_hud</object>
     <object>objects\obj_tut</object>
   </objects>
