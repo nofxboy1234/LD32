@@ -48,7 +48,7 @@ cur_dash_spd = 0;
 dash_accel = 5;
 
 dash_cur_frame = 0;
-dash_duration = (3) * room_speed; // dash lasts for 20 frames
+dash_duration = (1/4) * room_speed; // dash lasts for 20 frames
 
 
 // Stats
@@ -199,24 +199,6 @@ if (go_right) {
     }
 }
 
-// Set the stamina fraction that is used by the hud to update the stamina meter
-// This is separate from the stamina drain above, as it has it's own time set
-// before the stamina bar is full
-stamina_fraction = cur_stamina/stamina;
-//cur_stamina = stamina_fraction * stamina;
-
-// if stamina bar isn't full, add the stamina_gain for this frame
-if (cur_stamina &lt; stamina) {
-    cur_stamina += stamina_gain
-}
-
-// Reset the cur_stamina to stamina if it goes over the max.
-// I think this happens if frame rate fluctuates.
-if (cur_stamina &gt; stamina) {
-    cur_stamina = stamina
-}
-
-
 // Moving left
 if (go_left) {
     if (cur_h_spd &gt; -h_spd) {
@@ -232,6 +214,49 @@ if (go_left) {
         &amp;&amp; !go_right) {
             cur_jump_spd = -jump_spd;
     }
+    
+    // if we're still dashing
+    if (dashing) {
+        // subtract dash_cost from cur_stamina for this dash frame. Split over dash duration
+        cur_stamina += -dash_cost / dash_duration;
+        if cur_stamina &lt; 0 {
+            cur_stamina = 0;
+        }
+        
+        // Accelerate the cur_dash_spd up to the full dash_spd
+        if (cur_dash_spd &lt; dash_spd) {
+            cur_dash_spd += dash_accel;
+        }
+        else {
+            cur_dash_spd = dash_spd;
+        }
+        
+        // Add the cur_dash_spd on top of the cur_h_spd
+        cur_h_spd += -cur_dash_spd;
+
+        dash_cur_frame += 1;
+        if (dash_cur_frame == dash_duration) {
+            dashing = false;
+            dash_cur_frame = 0;
+        }
+    }
+}
+
+// Set the stamina fraction that is used by the hud to update the stamina meter
+// This is separate from the stamina drain above, as it has it's own time set
+// before the stamina bar is full
+stamina_fraction = cur_stamina/stamina;
+//cur_stamina = stamina_fraction * stamina;
+
+// if stamina bar isn't full, add the stamina_gain for this frame
+if (cur_stamina &lt; stamina) {
+    cur_stamina += stamina_gain
+}
+
+// Reset the cur_stamina to stamina if it goes over the max.
+// I think this happens if frame rate fluctuates.
+if (cur_stamina &gt; stamina) {
+    cur_stamina = stamina
 }
 
 // Check for not moving
