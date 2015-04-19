@@ -27,6 +27,7 @@
     <object>objects\obj_hud</object>
   </objects>
   <rooms name="rooms">
+    <room>rooms\room1</room>
     <room>rooms\rm_level_01</room>
   </rooms>
   <help>

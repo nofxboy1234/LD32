@@ -42,7 +42,8 @@ if (instance_exists(obj_player)) {
     
     // Debugging info
     draw_text(10, 70, "stamina_fraction: " + string(obj_player.stamina_fraction));
-    draw_text(10, 100, "endurance: " + string(obj_player.endurance));
+    draw_text(10, 100, "cur_stamina: " + string(obj_player.cur_stamina));
+    draw_text(10, 130, "dashing: " + string(obj_player.dashing));
 }
 </string>
           </argument>

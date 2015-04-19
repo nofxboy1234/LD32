@@ -36,26 +36,30 @@ grav = 1;
 
 
 // horizontal movement
-h_spd = 600 / room_speed;
+h_spd = 600 / room_speed; // 600 pixels per second
 cur_h_spd = 0;
 accel = 1;
 
-// dashing
-dash_spd = 100; // 100 pixels per second (on top of h_spd)
-cur_dash_spd = 0;
-dash_duration = (1/3) * room_speed; // dash lasts for 20 frames
+// dash movement
 dashing = false;
+
+dash_spd = 600 / room_speed; // 100 pixels per second (on top of h_spd)
+cur_dash_spd = 0;
+dash_accel = 5;
+
+dash_cur_frame = 0;
+dash_duration = (3) * room_speed; // dash lasts for 20 frames
 
 
 // Stats
-endurance = 200;
-endurance_cost = 100;
+stamina = 200;
+cur_stamina = stamina;
+dash_cost = 100;
 
-stamina_delay = room_speed * 3; // take 5 seconds to fill a completely empty stamina bar
+stamina_delay = 3 * room_speed; // take 3 seconds to fill a completely empty stamina bar
 stamina_fraction = 1;
 
 // HUD bars
-stamina = 200;
 stamina_gain = stamina / stamina_delay // amount of stamina gained per frame
 
 
@@ -94,6 +98,12 @@ var jkey = keyboard_check_pressed(ord('X'));
 var dash_key = keyboard_check_pressed(ord('Z'));
 
 // Gamepad controls
+var start_button = gamepad_button_check_pressed(device, gp_start);
+
+if (start_button) {
+    game_restart();
+}
+
 var r_pad = gamepad_button_check(0, gp_padr);
 var l_pad = gamepad_button_check(device, gp_padl);
 var jump_button = gamepad_button_check_pressed(device, gp_face1);
@@ -102,101 +112,8 @@ var dash_button = gamepad_button_check_pressed(device, gp_face2);
 var go_right = rkey || r_pad;
 var go_left = lkey || l_pad;
 var jump = jkey || jump_button;
-var dash = dash_key || dash_button;
-
-
-
-/*
-
-
-
-/*
-// Add the dash_spd for this frame if there's dash left
-if ((dashing) &amp;&amp; (dash_current &lt; dash_duration)) {
-    h_dash_spd = (dash_spd*1) / room_speed;
-    
-    //hspd += (h_dash_spd*1) / room_speed; // dash_spd for this frame
-    dash_current += 1;
-}
-
-
-
-
-
-// Dash while moving and if at least the minimum endurance cost is available
-if (endurance &gt;= endurance_cost) {
-    if (dash &amp;&amp; go_right) {
-        
-        //dashing = true;
-        //hspd += dash_spd;
-        
-        endurance -= endurance_cost;
-        if endurance &lt; 0 {
-            endurance = 0;
-        }
-        
-        dash_current = 0;
-        dashing = true;
-        //alarm[0] = stamina_delay;
-    }
-    else {
-        if (dash &amp;&amp; go_left) {
-            
-            //dashing = true;
-            //hspd += -dash_spd;
-            
-            endurance -= endurance_cost;
-            if endurance &lt; 0 {
-                endurance = 0;
-            }
-            
-            dash_current = 0;
-            dashing = true;
-            //alarm[0] = stamina_delay;
-        }
-    }
-}
-
-
-
-
-// Set the left over endurance
-stamina_fraction = endurance/stamina;
-endurance = stamina_fraction * stamina;
-
-// if stamina bar isn't full, add the stamina_gain for this frame
-if (endurance &lt; stamina) {
-    endurance += stamina_gain
-}
-
-if (dashing) {
-    // Horizontal collissions - dashing
-    if (place_meeting(x + h_dash_spd, y, obj_solid)) {
-        while (!place_meeting(x + sign(h_dash_spd), y, obj_solid)) {
-            x += sign(h_dash_spd);
-        }
-        h_dash_spd = 0;
-    }
-}
-else {
-
-}
-
-if (dashing) {
-    // Move horizontally - dashing
-    x += h_dash_spd;
-}
-else {
-
-}
-
-
-
-
-
-
-*/
-
+// The dash button was pressed while moving right or left
+var dash = (go_right || go_left) &amp;&amp; (dash_key || dash_button);
 
 // Check for the ground
 if (place_meeting(x, y+1, obj_solid)) {
@@ -228,6 +145,16 @@ else {
     }
 }
 
+// if the dash button was pressed while moving
+// This will only happen once, so we set the dashing variable
+// so dashing can continue for the dash_duration.
+if (dash) {
+    // and if we have enough cur_stamina
+    if (cur_stamina &gt;= dash_cost) {
+        // turn on dashing, which will run until it is turned off
+        dashing = true;
+    }
+}
 
 // Moving right
 if (go_right) {
@@ -244,7 +171,51 @@ if (go_right) {
         &amp;&amp; !go_left) {
             cur_jump_spd = -jump_spd;
     }
+    
+    // if we're still dashing
+    if (dashing) {
+        // subtract dash_cost from cur_stamina for this dash frame. Split over dash duration
+        cur_stamina += -dash_cost / dash_duration;
+        if cur_stamina &lt; 0 {
+            cur_stamina = 0;
+        }
+        
+        // Accelerate the cur_dash_spd up to the full dash_spd
+        if (cur_dash_spd &lt; dash_spd) {
+            cur_dash_spd += dash_accel;
+        }
+        else {
+            cur_dash_spd = dash_spd;
+        }
+        
+        // Add the cur_dash_spd on top of the cur_h_spd
+        cur_h_spd += cur_dash_spd;
+
+        dash_cur_frame += 1;
+        if (dash_cur_frame == dash_duration) {
+            dashing = false;
+            dash_cur_frame = 0;
+        }
+    }
 }
+
+// Set the stamina fraction that is used by the hud to update the stamina meter
+// This is separate from the stamina drain above, as it has it's own time set
+// before the stamina bar is full
+stamina_fraction = cur_stamina/stamina;
+//cur_stamina = stamina_fraction * stamina;
+
+// if stamina bar isn't full, add the stamina_gain for this frame
+if (cur_stamina &lt; stamina) {
+    cur_stamina += stamina_gain
+}
+
+// Reset the cur_stamina to stamina if it goes over the max.
+// I think this happens if frame rate fluctuates.
+if (cur_stamina &gt; stamina) {
+    cur_stamina = stamina
+}
+
 
 // Moving left
 if (go_left) {
@@ -265,6 +236,8 @@ if (go_left) {
 
 // Check for not moving
 if ((!go_right &amp;&amp; !go_left) || (go_right &amp;&amp; go_left)) {
+    dashing = false;
+
     // if we haven't stopped yet
     if (cur_h_spd != 0) {
         // and we're moving left
@@ -280,15 +253,16 @@ if ((!go_right &amp;&amp; !go_left) || (go_right &amp;&amp; go_left)) {
 }
 
 
-// Horizontal collissions - normal
+// Horizontal collissions
 if (place_meeting(x + cur_h_spd, y, obj_solid)) {
     while (!place_meeting(x + sign(cur_h_spd), y, obj_solid)) {
         x += sign(cur_h_spd);
     }
     cur_h_spd = 0;
+    dashing = false;
 }
 
-// Move horizontally - normal
+// Move horizontally
 x += cur_h_spd;
 
 // Vertical collissions
