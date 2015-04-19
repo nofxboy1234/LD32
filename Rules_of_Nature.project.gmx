@@ -25,7 +25,9 @@
     <object>objects\obj_player2</object>
     <object>objects\obj_enemy</object>
     <object>objects\obj_hud</object>
+    <object>objects\obj_tut</object>
   </objects>
+  <timelines name="timelines"/>
   <rooms name="rooms">
     <room>rooms\rm_level_01</room>
     <room>rooms\room1</room>
