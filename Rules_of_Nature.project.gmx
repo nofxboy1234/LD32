@@ -10,6 +10,7 @@
     <sprite>sprites\spr_enemy</sprite>
     <sprite>sprites\spr_player2</sprite>
     <sprite>sprites\spr_solid</sprite>
+    <sprite>sprites\spr_health_vial</sprite>
   </sprites>
   <backgrounds name="background"/>
   <paths name="paths"/>
@@ -19,6 +20,11 @@
     <script>scripts\scr_move_right.gml</script>
     <script>scripts\scr_move_left.gml</script>
   </scripts>
+  <fonts name="fonts">
+    <font>fonts\fnt_title</font>
+    <font>fonts\fnt_title_2</font>
+    <font>fonts\fnt_tut</font>
+  </fonts>
   <objects name="objects">
     <object>objects\obj_solid</object>
     <object>objects\obj_player</object>
@@ -27,11 +33,16 @@
     <object>objects\obj_boss</object>
     <object>objects\obj_hud</object>
     <object>objects\obj_tut</object>
+    <object>objects\obj_credits</object>
+    <object>objects\obj_title</object>
+    <object>objects\obj_health_vial</object>
   </objects>
   <timelines name="timelines"/>
   <rooms name="rooms">
+    <room>rooms\rm_title</room>
     <room>rooms\rm_level_01</room>
-    <room>rooms\room1</room>
+    <room>rooms\rm_credits</room>
+    <room>rooms\room_test</room>
   </rooms>
   <help>
     <rtf>help.rtf</rtf>
