@@ -17,4 +17,3 @@ if (magnitude >= threshold) {
         y += yaxis*spd;
     }
 }
-

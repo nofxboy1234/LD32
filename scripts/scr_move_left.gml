@@ -9,4 +9,3 @@ if (not_wall && not_ledge) {
 else {
     state = scr_move_right;
 }
-
